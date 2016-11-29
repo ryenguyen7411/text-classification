@@ -9170,3 +9170,4 @@ product.aspx
 productid
 country
 student.
+usd
