@@ -1,9 +1,0 @@
-C:\Users\ShichiKi\Desktop\android_seminar\2. PROJECT\RyeTokenizer\bin\Debug\LollipopUI.exe.config
-C:\Users\ShichiKi\Desktop\android_seminar\2. PROJECT\RyeTokenizer\bin\Debug\LollipopUI.exe
-C:\Users\ShichiKi\Desktop\android_seminar\2. PROJECT\RyeTokenizer\bin\Debug\LollipopUI.pdb
-C:\Users\ShichiKi\Desktop\android_seminar\2. PROJECT\RyeTokenizer\bin\obj\Debug\RyeTokenizer.csprojResolveAssemblyReference.cache
-C:\Users\ShichiKi\Desktop\android_seminar\2. PROJECT\RyeTokenizer\bin\obj\Debug\LollipopUI.MainForm.resources
-C:\Users\ShichiKi\Desktop\android_seminar\2. PROJECT\RyeTokenizer\bin\obj\Debug\LollipopUI.Properties.Resources.resources
-C:\Users\ShichiKi\Desktop\android_seminar\2. PROJECT\RyeTokenizer\bin\obj\Debug\RyeTokenizer.csproj.GenerateResource.Cache
-C:\Users\ShichiKi\Desktop\android_seminar\2. PROJECT\RyeTokenizer\bin\obj\Debug\LollipopUI.exe
-C:\Users\ShichiKi\Desktop\android_seminar\2. PROJECT\RyeTokenizer\bin\obj\Debug\LollipopUI.pdb
