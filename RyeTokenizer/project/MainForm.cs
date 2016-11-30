@@ -25,12 +25,7 @@ namespace LollipopUI
         {
             InitializeComponent();
 
-			//Dictionary.Sync("TechicalWordsLibrary.txt", "TechicalWordsLibrary.txt");
-
 			Dictionary.LoadWordsList("Viet74K.txt");
-			//Dictionary.SplitWord1Syl("1_syl.txt");
-
-
 			Dictionary.LoadStopWords("vietnamese-stopwords.txt");
 
 			SetupBackgroundWorker();

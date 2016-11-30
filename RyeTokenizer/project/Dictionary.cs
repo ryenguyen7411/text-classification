@@ -387,31 +387,24 @@ namespace LollipopUI
 
 	public class Indexer
 	{
-		public ArrayList Indexing(string title, string tags, ArrayList words)
+		public ArrayList Indexing(string title, string description, ArrayList words)
 		{
 			ArrayList _wordsIndexed = new ArrayList();
 			Tokenizer _tokenizer = new Tokenizer();
 
 			string[] _wordsInTitle = (_tokenizer.Tokenizing(title).ToArray(typeof(string)) as string[]).Distinct().ToArray();
-            string[] _wordsInTitle2 = (_tokenizer.Tokenizing(tags).ToArray(typeof(string)) as string[]).Distinct().ToArray();
+            string[] _wordsInDesc = (_tokenizer.Tokenizing(description).ToArray(typeof(string)) as string[]).Distinct().ToArray();
+
             foreach (string _word in _wordsInTitle)
 			{
 				_wordsIndexed.Add(new Word(_word, 1));
 			}
-            foreach (string _word in _wordsInTitle2)
+
+            foreach (string _word in _wordsInDesc)
             {
-                _wordsIndexed.Add(new Word(_word, 1));
+                if (!_wordsIndexed.Contains(_word))
+                    _wordsIndexed.Add(new Word(_word, 1));
             }
-
-
-           /* string[] _wordsInTags = tags.Split('|');
-			foreach(string _word in _wordsInTags)
-			{
-				if (!_wordsIndexed.Contains(_word))
-					_wordsIndexed.Add(new Word(_word, 1));
-			}*/
-
-
 
 			int _wordsCount = words.Count;
 			Dictionary<string, int> _distinctWordsCounting = (words.ToArray(typeof(string)) as string[]).GroupBy(x => x)
