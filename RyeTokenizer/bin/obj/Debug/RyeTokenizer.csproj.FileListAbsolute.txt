@@ -7,3 +7,12 @@ C:\Users\ShichiKi\Desktop\android_seminar\2. PROJECT\RyeTokenizer\bin\obj\Debug\
 C:\Users\ShichiKi\Desktop\android_seminar\2. PROJECT\RyeTokenizer\bin\obj\Debug\LollipopUI.exe
 C:\Users\ShichiKi\Desktop\android_seminar\2. PROJECT\RyeTokenizer\bin\obj\Debug\LollipopUI.pdb
 C:\Users\ShichiKi\Desktop\android_seminar\2. PROJECT\RyeTokenizer\bin\obj\Debug\RyeTokenizer.csprojResolveAssemblyReference.cache
+D:\text-classification\RyeTokenizer\bin\Debug\LollipopUI.exe.config
+D:\text-classification\RyeTokenizer\bin\Debug\LollipopUI.exe
+D:\text-classification\RyeTokenizer\bin\Debug\LollipopUI.pdb
+D:\text-classification\RyeTokenizer\bin\obj\Debug\RyeTokenizer.csprojResolveAssemblyReference.cache
+D:\text-classification\RyeTokenizer\bin\obj\Debug\LollipopUI.MainForm.resources
+D:\text-classification\RyeTokenizer\bin\obj\Debug\LollipopUI.Properties.Resources.resources
+D:\text-classification\RyeTokenizer\bin\obj\Debug\RyeTokenizer.csproj.GenerateResource.Cache
+D:\text-classification\RyeTokenizer\bin\obj\Debug\LollipopUI.exe
+D:\text-classification\RyeTokenizer\bin\obj\Debug\LollipopUI.pdb

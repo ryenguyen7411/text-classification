@@ -26,6 +26,7 @@ namespace LollipopUI
             InitializeComponent();
 
 			Dictionary.LoadWordsList("Viet74K.txt");
+            Dictionary.LoadWordsList("technical-dict.txt")
 			Dictionary.LoadStopWords("vietnamese-stopwords.txt");
 
 			SetupBackgroundWorker();
@@ -244,6 +245,8 @@ namespace LollipopUI
 				int _currentProgress = 0;
 				m_tokenizingWorker.ReportProgress(0);
 
+                int line = 1;
+
 				foreach (string _line in _lines)
 				{
 					try
@@ -270,9 +273,9 @@ namespace LollipopUI
 						if (m_untokenizedOutputDirectory == "")
 							_result = _tokenizer.Tokenizing(_content);
 						else
-							_result = _tokenizer.Tokenizing(_content, true, m_untokenizedOutputDirectory + "\\" + _title + ".not");
+							_result = _tokenizer.Tokenizing(_content, true, m_untokenizedOutputDirectory + "\\" + line + ".not");
 
-						string _outputPath = m_outputDirectory + "\\" + _title + ".tok";
+						string _outputPath = m_outputDirectory + "\\" + line++ + ".tok";
 						var _writetream = new System.IO.FileStream(_outputPath,
 										  System.IO.FileMode.Create,
 										  System.IO.FileAccess.Write,
@@ -332,7 +335,9 @@ namespace LollipopUI
 			try
 			{
 				int _currentProgress = 0;
-				m_tokenizingWorker.ReportProgress(0);
+                m_indexingWorker.ReportProgress(0);
+
+                ArrayList _documents = new ArrayList();
 
 				foreach (string _line in _lines)
 				{
@@ -363,39 +368,35 @@ namespace LollipopUI
 						Indexer _indexer = new Indexer();
 						ArrayList _result = _indexer.Indexing(_title, _decription, _wordsTokenized);
 
-                       // ArrayList _result2 = _indexer.Indexing(_decription, _decription, _wordsTokenized);
-
+                        _documents.Add(_result);
 
                         string _outputPath = m_outputDirectory + "\\" + _title + ".ind";
-						var _writetream = new System.IO.FileStream(_outputPath,
-										  System.IO.FileMode.Create,
-										  System.IO.FileAccess.Write,
-										  System.IO.FileShare.ReadWrite);
-						var _writer = new System.IO.StreamWriter(_writetream, System.Text.Encoding.UTF8, 128);
+						//var _writetream = new System.IO.FileStream(_outputPath,
+						//				  System.IO.FileMode.Create,
+						//				  System.IO.FileAccess.Write,
+						//				  System.IO.FileShare.ReadWrite);
+						//var _writer = new System.IO.StreamWriter(_writetream, System.Text.Encoding.UTF8, 128);
 
-
-                        int i = 0;
+                        //int i = 0;
                        
-                        foreach (Word _word in _result)
-                        {
+                        //foreach (Word _word in _result)
+                        //{
                             
-                            _writer.WriteLine(_word.m_content + '|' + _word.m_weight );
-                            if (i < 5 && _word.m_weight==1)
-                            {
-                                k.Add(_word.m_content);
-                                i++;
-                            }
-
-                        }
+                        //    _writer.WriteLine(_word.m_content + '|' + _word.m_weight );
+                        //    if (i < 5 && _word.m_weight==1)
+                        //    {
+                        //        k.Add(_word.m_content);
+                        //        i++;
+                        //    }
+                        //}
                       
-
-                        _writer.Dispose();
-						_writetream.Dispose();
+      //                  _writer.Dispose();
+						//_writetream.Dispose();
 
 						m_inputIndexed += _outputPath + Environment.NewLine;
 
 						_currentProgress++;
-						m_tokenizingWorker.ReportProgress(_currentProgress * 100 / _lines.Count());
+                        m_indexingWorker.ReportProgress(_currentProgress * 90 / _lines.Count());
 
 						if (m_indexingWorker.CancellationPending)
 						{
@@ -408,26 +409,31 @@ namespace LollipopUI
 
 					}
 				}
-			}
+
+                Indexer.CalculateIDF(ref _documents);
+
+
+            }
 			catch
 			{
 				MessageBox.Show("No file to tokenize. Process failed...");
 			}
-            string _dictionary = m_outputDirectory + "\\" + "dictionary" + ".ind";
 
-            var _writetream1 = new System.IO.FileStream(_dictionary,
-                              System.IO.FileMode.Create,
-                              System.IO.FileAccess.Write,
-                              System.IO.FileShare.ReadWrite);
-            var _writer1 = new System.IO.StreamWriter(_writetream1, System.Text.Encoding.UTF8, 128);
 
-            foreach ( string s in k)
-            {
-                _writer1.WriteLine(s);
-            }
-            _writer1.Dispose();
-            _writetream1.Dispose();
+            //string _dictionary = m_outputDirectory + "\\" + "dictionary" + ".ind";
 
+            //var _writetream1 = new System.IO.FileStream(_dictionary,
+            //                  System.IO.FileMode.Create,
+            //                  System.IO.FileAccess.Write,
+            //                  System.IO.FileShare.ReadWrite);
+            //var _writer1 = new System.IO.StreamWriter(_writetream1, System.Text.Encoding.UTF8, 128);
+
+            //foreach ( string s in k)
+            //{
+            //    _writer1.WriteLine(s);
+            //}
+            //_writer1.Dispose();
+            //_writetream1.Dispose();
         }
 	}
 }

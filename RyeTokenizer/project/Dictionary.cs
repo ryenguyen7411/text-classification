@@ -335,7 +335,7 @@ namespace LollipopUI
 					{
 						if (!Dictionary.IsInStopWordList(_word.Key) && _word.Value >= 40)
 						{
-							Dictionary.AddWord("Viet74K.txt", _word.Key);
+							Dictionary.AddWord("technical-dict.txt", _word.Key);
 						}
 					}
 
@@ -422,5 +422,32 @@ namespace LollipopUI
 
 			return _wordsIndexed;
 		}
-	}
+
+        public static void CalculateIDF(ref ArrayList documents)
+        {
+            foreach(ArrayList document in documents)
+            {
+                foreach(Word word in document)
+                {
+                    word.m_weight *= IDF(documents, word);
+                }
+
+                document.OfType<Word>().OrderBy(r => r.m_weight);
+            }
+        }
+
+        public static float IDF(ArrayList documents, Word word)
+        {
+            int D = documents.Count;
+            int d = 0;
+
+            foreach (ArrayList document in documents)
+            {
+                if (document.Contains(word))
+                    d++;
+            }
+
+            return ((float) D) / d;
+        }
+    }
 }
