@@ -29,10 +29,7 @@ namespace LollipopUI
 
 			Dictionary.LoadWordsList("Viet74K.txt");
 			//Dictionary.SplitWord1Syl("1_syl.txt");
-			Dictionary.SyncWordFormat("Viet74K_Synced.txt", '_');
 
-
-			Dictionary.LoadWordsList("TechicalWordsLibrary.txt");
 
 			Dictionary.LoadStopWords("vietnamese-stopwords.txt");
 
@@ -263,10 +260,9 @@ namespace LollipopUI
 										  System.IO.FileShare.ReadWrite);
 						var _reader = new System.IO.StreamReader(_readStream, System.Text.Encoding.UTF8, true, 128);
 
-						string _id = _reader.ReadLine();
-						string _friendly_url = _reader.ReadLine();
+					
 						string _title = _reader.ReadLine();
-						string _tags = _reader.ReadLine();
+						string _decription = _reader.ReadLine();
 						string _content = _reader.ReadToEnd();
 
 						_reader.Dispose();
@@ -279,16 +275,16 @@ namespace LollipopUI
 						if (m_untokenizedOutputDirectory == "")
 							_result = _tokenizer.Tokenizing(_content);
 						else
-							_result = _tokenizer.Tokenizing(_content, true, m_untokenizedOutputDirectory + "\\" + _id + '-' + _friendly_url + ".not");
+							_result = _tokenizer.Tokenizing(_content, true, m_untokenizedOutputDirectory + "\\" + _title + ".not");
 
-						string _outputPath = m_outputDirectory + "\\" + _id + '-' + _friendly_url + ".tok";
+						string _outputPath = m_outputDirectory + "\\" + _title + ".tok";
 						var _writetream = new System.IO.FileStream(_outputPath,
 										  System.IO.FileMode.Create,
 										  System.IO.FileAccess.Write,
 										  System.IO.FileShare.ReadWrite);
 						var _writer = new System.IO.StreamWriter(_writetream, System.Text.Encoding.UTF8, 128);
-						_writer.Write(_id + Environment.NewLine + _friendly_url + Environment.NewLine +
-										_title + Environment.NewLine + _tags + Environment.NewLine +
+						_writer.Write(
+										_title + Environment.NewLine + _decription + Environment.NewLine +
 										string.Join(Environment.NewLine, _result.ToArray(typeof(string)) as string[]));
 
 						_writer.Dispose();
@@ -336,6 +332,8 @@ namespace LollipopUI
 		{
 			string[] _lines = txtbox_tokenized.Lines;
 
+            ArrayList k = new ArrayList();
+
 			try
 			{
 				int _currentProgress = 0;
@@ -352,10 +350,9 @@ namespace LollipopUI
 										  System.IO.FileShare.ReadWrite);
 						var _reader = new System.IO.StreamReader(_readStream, System.Text.Encoding.UTF8, true, 128);
 
-						string _id = _reader.ReadLine();
-						string _friendly_url = _reader.ReadLine();
+						
 						string _title = _reader.ReadLine();
-						string _tags = _reader.ReadLine();
+						string _decription = _reader.ReadLine();
 						ArrayList _wordsTokenized = new ArrayList();
 						string _wordToken = null;
 
@@ -369,24 +366,35 @@ namespace LollipopUI
 
 
 						Indexer _indexer = new Indexer();
-						ArrayList _result = _indexer.Indexing(_title, _tags, _wordsTokenized);
+						ArrayList _result = _indexer.Indexing(_title, _decription, _wordsTokenized);
+
+                       // ArrayList _result2 = _indexer.Indexing(_decription, _decription, _wordsTokenized);
 
 
-						string _outputPath = m_outputDirectory + "\\" + _id + '-' + _friendly_url + ".ind";
+                        string _outputPath = m_outputDirectory + "\\" + _title + ".ind";
 						var _writetream = new System.IO.FileStream(_outputPath,
 										  System.IO.FileMode.Create,
 										  System.IO.FileAccess.Write,
 										  System.IO.FileShare.ReadWrite);
 						var _writer = new System.IO.StreamWriter(_writetream, System.Text.Encoding.UTF8, 128);
-						_writer.Write(_id + Environment.NewLine + _friendly_url + Environment.NewLine +
-										_title + Environment.NewLine + _tags + Environment.NewLine);
 
-						foreach (Word _word in _result)
-						{
-							_writer.WriteLine(_word.m_content + '|' + _word.m_weight + '|' + 1);
-						}
 
-						_writer.Dispose();
+                        int i = 0;
+                       
+                        foreach (Word _word in _result)
+                        {
+                            
+                            _writer.WriteLine(_word.m_content + '|' + _word.m_weight );
+                            if (i < 5 && _word.m_weight==1)
+                            {
+                                k.Add(_word.m_content);
+                                i++;
+                            }
+
+                        }
+                      
+
+                        _writer.Dispose();
 						_writetream.Dispose();
 
 						m_inputIndexed += _outputPath + Environment.NewLine;
@@ -410,6 +418,21 @@ namespace LollipopUI
 			{
 				MessageBox.Show("No file to tokenize. Process failed...");
 			}
-		}
+            string _dictionary = m_outputDirectory + "\\" + "dictionary" + ".ind";
+
+            var _writetream1 = new System.IO.FileStream(_dictionary,
+                              System.IO.FileMode.Create,
+                              System.IO.FileAccess.Write,
+                              System.IO.FileShare.ReadWrite);
+            var _writer1 = new System.IO.StreamWriter(_writetream1, System.Text.Encoding.UTF8, 128);
+
+            foreach ( string s in k)
+            {
+                _writer1.WriteLine(s);
+            }
+            _writer1.Dispose();
+            _writetream1.Dispose();
+
+        }
 	}
 }

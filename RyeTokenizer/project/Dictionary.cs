@@ -335,7 +335,7 @@ namespace LollipopUI
 					{
 						if (!Dictionary.IsInStopWordList(_word.Key) && _word.Value >= 40)
 						{
-							Dictionary.AddWord("TechicalWordsLibrary.txt", _word.Key);
+							Dictionary.AddWord("Viet74K.txt", _word.Key);
 						}
 					}
 
@@ -393,19 +393,23 @@ namespace LollipopUI
 			Tokenizer _tokenizer = new Tokenizer();
 
 			string[] _wordsInTitle = (_tokenizer.Tokenizing(title).ToArray(typeof(string)) as string[]).Distinct().ToArray();
-			foreach (string _word in _wordsInTitle)
+            string[] _wordsInTitle2 = (_tokenizer.Tokenizing(tags).ToArray(typeof(string)) as string[]).Distinct().ToArray();
+            foreach (string _word in _wordsInTitle)
 			{
 				_wordsIndexed.Add(new Word(_word, 1));
 			}
+            foreach (string _word in _wordsInTitle2)
+            {
+                _wordsIndexed.Add(new Word(_word, 1));
+            }
 
 
-
-			string[] _wordsInTags = tags.Split('|');
+           /* string[] _wordsInTags = tags.Split('|');
 			foreach(string _word in _wordsInTags)
 			{
 				if (!_wordsIndexed.Contains(_word))
 					_wordsIndexed.Add(new Word(_word, 1));
-			}
+			}*/
 
 
 
