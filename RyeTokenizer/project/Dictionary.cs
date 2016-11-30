@@ -447,7 +447,7 @@ namespace LollipopUI
                     d++;
             }
 
-            return ((float) D) / d;
+            return (float)Math.Log10(((float) D) / d);
         }
     }
 }
