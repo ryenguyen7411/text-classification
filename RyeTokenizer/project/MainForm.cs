@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -337,7 +338,9 @@ namespace LollipopUI
 				int _currentProgress = 0;
                 m_indexingWorker.ReportProgress(0);
 
-                ArrayList _documents = new ArrayList();
+                List<List<Word>> _documents = new List<List<Word>>();
+
+                int line = 1;
 
 				foreach (string _line in _lines)
 				{
@@ -366,11 +369,11 @@ namespace LollipopUI
 
 
 						Indexer _indexer = new Indexer();
-						ArrayList _result = _indexer.Indexing(_title, _decription, _wordsTokenized);
+						List<Word> _result = (_indexer.Indexing(_title, _decription, _wordsTokenized)).Cast<Word>().ToList();
 
                         _documents.Add(_result);
 
-                        string _outputPath = m_outputDirectory + "\\" + _title + ".ind";
+                        string _outputPath = m_outputDirectory + "\\" + line++ + ".ind";
 						//var _writetream = new System.IO.FileStream(_outputPath,
 						//				  System.IO.FileMode.Create,
 						//				  System.IO.FileAccess.Write,
@@ -412,11 +415,25 @@ namespace LollipopUI
 
                 Indexer.CalculateIDF(ref _documents);
 
+                string _dictionary = m_outputDirectory + "\\" + "dict" + ".ind";
+                int MAX_WORD_PER_DOC = 5;
 
+                foreach(List<Word> document in _documents)
+                {
+                    for(int i = 0; i < MAX_WORD_PER_DOC; i++)
+                    {
+                        if (document.Count <= i)
+                            break;
+
+                        Dictionary.AddWord(_dictionary, document.ElementAt(i));
+                    }
+                }
+
+                m_indexingWorker.ReportProgress(100);
             }
 			catch
 			{
-				MessageBox.Show("No file to tokenize. Process failed...");
+				MessageBox.Show("No file to indexing. Process failed...");
 			}
 
 

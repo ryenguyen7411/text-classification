@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -190,7 +191,21 @@ namespace LollipopUI
 			_writeStream.Dispose();
 		}
 
-		public static void SplitWord1Syl(string path)
+        public static void AddWord(string path, Word word)
+        {
+            var _writeStream = new System.IO.FileStream(path,
+                                          System.IO.FileMode.Append,
+                                          System.IO.FileAccess.Write,
+                                          System.IO.FileShare.ReadWrite);
+            var _writer = new System.IO.StreamWriter(_writeStream, System.Text.Encoding.UTF8, 128);
+
+            _writer.WriteLine(word.m_content + ":" + word.m_weight);
+
+            _writer.Dispose();
+            _writeStream.Dispose();
+        }
+
+        public static void SplitWord1Syl(string path)
 		{
 			var _writeStream = new System.IO.FileStream(path,
 										  System.IO.FileMode.Create,
@@ -395,16 +410,16 @@ namespace LollipopUI
 			string[] _wordsInTitle = (_tokenizer.Tokenizing(title).ToArray(typeof(string)) as string[]).Distinct().ToArray();
             string[] _wordsInDesc = (_tokenizer.Tokenizing(description).ToArray(typeof(string)) as string[]).Distinct().ToArray();
 
-            foreach (string _word in _wordsInTitle)
-			{
-				_wordsIndexed.Add(new Word(_word, 1));
-			}
+   //         foreach (string _word in _wordsInTitle)
+			//{
+			//	_wordsIndexed.Add(new Word(_word, 1));
+			//}
 
-            foreach (string _word in _wordsInDesc)
-            {
-                if (!_wordsIndexed.Contains(_word))
-                    _wordsIndexed.Add(new Word(_word, 1));
-            }
+   //         foreach (string _word in _wordsInDesc)
+   //         {
+   //             if (!_wordsIndexed.Contains(_word))
+   //                 _wordsIndexed.Add(new Word(_word, 1));
+   //         }
 
 			int _wordsCount = words.Count;
 			Dictionary<string, int> _distinctWordsCounting = (words.ToArray(typeof(string)) as string[]).GroupBy(x => x)
@@ -423,25 +438,25 @@ namespace LollipopUI
 			return _wordsIndexed;
 		}
 
-        public static void CalculateIDF(ref ArrayList documents)
+        public static void CalculateIDF(ref List<List<Word>> documents)
         {
-            foreach(ArrayList document in documents)
+            foreach(List<Word> document in documents)
             {
                 foreach(Word word in document)
                 {
                     word.m_weight *= IDF(documents, word);
                 }
 
-                document.OfType<Word>().OrderBy(r => r.m_weight);
+                document.Sort((x, y) => y.m_weight.CompareTo(x.m_weight));
             }
         }
 
-        public static float IDF(ArrayList documents, Word word)
+        public static float IDF(List<List<Word>> documents, Word word)
         {
             int D = documents.Count;
             int d = 0;
 
-            foreach (ArrayList document in documents)
+            foreach (List<Word> document in documents)
             {
                 if (document.Contains(word))
                     d++;
