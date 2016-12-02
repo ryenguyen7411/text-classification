@@ -26,6 +26,17 @@ namespace LollipopUI
         {
             InitializeComponent();
 
+            bool MAKE_FILE = true;
+
+            if(MAKE_FILE)
+            {
+                List<string> _dict = Dictionary.GetDict("D:\\text\\training\\indexed");
+                //Dictionary.IndexedData("D:\\text\\training\\indexed", _dict);
+                Dictionary.MakeCSV("D:\\text\\training\\indexed", _dict);
+
+                return;
+            }
+
 			Dictionary.LoadWordsList("Viet74K.txt");
             Dictionary.LoadWordsList("technical-dict.txt");
 			Dictionary.LoadStopWords("vietnamese-stopwords.txt");
@@ -415,19 +426,10 @@ namespace LollipopUI
 
                 Indexer.CalculateIDF(ref _documents);
 
-                string _dictionary = m_outputDirectory + "\\" + "dict" + ".ind";
-                int MAX_WORD_PER_DOC = 5;
+                string _dictionary = m_outputDirectory + "\\" + "dict" + ".dic";
+                string _data = m_outputDirectory + "\\" + "data" + ".ind";
 
-                foreach(List<Word> document in _documents)
-                {
-                    for(int i = 0; i < MAX_WORD_PER_DOC; i++)
-                    {
-                        if (document.Count <= i)
-                            break;
-
-                        Dictionary.AddWord(_dictionary, document.ElementAt(i));
-                    }
-                }
+                Dictionary.MakeDict(_dictionary, _documents, _data);
 
                 m_indexingWorker.ReportProgress(100);
             }

@@ -8,6 +8,15 @@ using System.Windows.Forms;
 
 namespace LollipopUI
 {
+    public static class Helper
+    {
+        public static int EDU = 1;
+        public static int MUSIC = 2;
+        public static int TECH = 3;
+
+        public static string[] DICT = { "edu_data", "music_data", "tech_data" };
+    }
+
 	public static class Dictionary
 	{
 		public static ArrayList m_words1 = new ArrayList();
@@ -256,7 +265,209 @@ namespace LollipopUI
 			_writer.Dispose();
 			_writeStream.Dispose();
 		}
-	}
+
+        public static void MakeDict(string path, List<List<Word>> documents, string dataPath)
+        {
+            int MAX_WORD_PER_DOC = 5;
+            List<Word> dict = new List<Word>();
+
+            foreach (List<Word> document in documents)
+            {
+                for (int i = 0; i < MAX_WORD_PER_DOC; i++)
+                {
+                    if (document.Count <= i)
+                        break;
+
+                    dict.Add(document.ElementAt(i));
+                }
+            }
+
+            var _result = dict.GroupBy(d => d.m_content)
+                .Select(
+                    g => new
+                    {
+                        Key = g.Key,
+                        Value = g.Sum(s => s.m_weight)
+                    }
+                ).ToList();
+
+            _result.Sort((x, y) => y.Value.CompareTo(x.Value));
+
+            List<string> strDict = new List<string>();
+
+            foreach(var word in _result)
+            {
+                Dictionary.AddWord(path, word.Key);
+                strDict.Add(word.Key);
+            }
+
+            int TYPE = 3;
+
+            foreach (List<Word> document in documents)
+            {
+                string _data = TYPE + ",";
+                List<Word> _temp = new List<Word>();
+
+                for (int i = 0; i < MAX_WORD_PER_DOC; i++)
+                {
+                    if (document.Count <= i)
+                        break;
+
+                    _data += strDict.IndexOf(document.ElementAt(i).m_content) + ":" + document.ElementAt(i).m_weight + ",";
+                }
+
+                if (document.Count == 0)
+                    continue;
+
+                Dictionary.AddWord(dataPath, _data);
+            }
+        }
+
+        public static List<string> GetDict(string path)
+        {
+            List<string> dict = new List<string>();
+
+            for(int i = 0; i < 3; i++)
+            {
+                var _filestream = new System.IO.FileStream(path + "\\" + Helper.DICT[i] + "\\dict.dic",
+                                          System.IO.FileMode.Open,
+                                          System.IO.FileAccess.Read,
+                                          System.IO.FileShare.ReadWrite);
+                var _file = new System.IO.StreamReader(_filestream, System.Text.Encoding.UTF8, true, 128);
+
+                string _word = null;
+                while ((_word = _file.ReadLine()) != null)
+                {
+                    dict.Add(_word);
+                }
+
+                _file.Dispose();
+                _filestream.Dispose();
+            }
+
+            dict.Distinct();
+
+            return dict;
+        }
+
+        public static void IndexedData(string path, List<string> dict)
+        {
+            List<string> _result = new List<string>();
+
+            for (int i = 0; i < 3; i++)
+            {
+                var _filestream = new System.IO.FileStream(path + "\\" + Helper.DICT[i] + "\\data.ind",
+                                          System.IO.FileMode.Open,
+                                          System.IO.FileAccess.Read,
+                                          System.IO.FileShare.ReadWrite);
+                var _file = new System.IO.StreamReader(_filestream, System.Text.Encoding.UTF8, true, 128);
+
+                string _word = null;
+                while ((_word = _file.ReadLine()) != null)
+                {
+                    string[] _splited = _word.Split(',');
+                    string _data = _splited[0] + " ";
+
+                    List<Word> _temp = new List<Word>();
+
+                    for (int j = 1; j < _splited.Count(); j++)
+                    {
+                        if (_splited[j] == "")
+                            break;
+
+                        Word newWord = Word.Parse(_splited[j], ':');
+                        _temp.Add(newWord);
+                    }
+
+                    _temp.Sort((x, y) => dict.IndexOf(x.m_content).CompareTo(dict.IndexOf(y.m_content)));
+
+                    for (int j = 0; j < _temp.Count; j++)
+                    {
+                        _data += dict.IndexOf(_temp.ElementAt(j).m_content) + ":" + _temp.ElementAt(j).m_weight + " ";
+                    }
+
+                    _result.Add(_data);
+                }
+
+                _file.Dispose();
+                _filestream.Dispose();
+            }
+
+            foreach(string word in _result)
+            {
+                Dictionary.AddWord(path + "\\data.txt", word);
+            }
+
+            foreach(string word in dict)
+            {
+                Dictionary.AddWord(path + "\\dict.txt", word);
+            }
+        }
+
+        public static void MakeCSV(string path, List<string> dict)
+        {
+            List<string> _result = new List<string>();
+
+            string _dictCSV = "label,";
+            for(int i = 0; i < dict.Count; i++)
+            {
+                _dictCSV += dict.ElementAt(i);
+                if (i < dict.Count - 1)
+                    _dictCSV += ",";
+            }
+
+            _result.Add(_dictCSV);
+
+            for (int i = 0; i < 3; i++)
+            {
+                var _filestream = new System.IO.FileStream(path + "\\" + Helper.DICT[i] + "\\data.ind",
+                                          System.IO.FileMode.Open,
+                                          System.IO.FileAccess.Read,
+                                          System.IO.FileShare.ReadWrite);
+                var _file = new System.IO.StreamReader(_filestream, System.Text.Encoding.UTF8, true, 128);
+
+                string _word = null;
+                while ((_word = _file.ReadLine()) != null)
+                {
+                    string[] _splited = _word.Split(',');
+                    string _data = _splited[0] + ",";
+
+                    List<float> _temp = new List<float>();
+                    
+                    for(int x = 0; x < dict.Count; x++)
+                    {
+                        _temp.Add(0);
+                    }
+
+                    for (int j = 1; j < _splited.Count(); j++)
+                    {
+                        if (_splited[j] == "")
+                            break;
+
+                        Word newWord = Word.Parse(_splited[j], ':');
+                        _temp[dict.IndexOf(newWord.m_content)] = newWord.m_weight;
+                    }
+
+                    for(int x = 0; x < _temp.Count; x++)
+                    {
+                        _data += _temp[x];
+                        if (x < _temp.Count - 1)
+                            _data += ",";
+                    }
+
+                    _result.Add(_data);
+                }
+
+                _file.Dispose();
+                _filestream.Dispose();
+            }
+
+            foreach (string word in _result)
+            {
+                Dictionary.AddWord(path + "\\data.csv", word);
+            }
+        }
+    }
 
 	public class Tokenizer
 	{
@@ -381,10 +592,14 @@ namespace LollipopUI
 		public string m_content;
 		public float m_weight;
 
+        public int m_type;
+
 		public Word(string content, float weight)
 		{
 			m_content = content;
 			m_weight = weight;
+
+            m_type = 0;
 		}
 
 		public static string Join(string delimiter, ArrayList listWords)
@@ -398,6 +613,13 @@ namespace LollipopUI
 
 			return _result;
 		}
+
+        public static Word Parse(string word, char seperator = ' ')
+        {
+            string[] splited = word.Split(seperator);
+
+            return new Word(splited[0], float.Parse(splited[1]));
+        }
 	}
 
 	public class Indexer
